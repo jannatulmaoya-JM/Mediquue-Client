@@ -1,15 +1,19 @@
 import { betterAuth } from "better-auth";
-import { MongoClient } from "mongodb";
+import { MongoClient, } from "mongodb";
+import { mongodbAdapter } from "better-auth/adapters/mongodb";
+
+
+if (!process.env.DB_URL) {
+  throw new Error("Missing DB_URL environment variable");
+}
 
 const client = new MongoClient(process.env.DB_URL);
-const db = client.db();
-
+const db = client.db("medi-queue-tutor");
 
 export const auth = betterAuth({
-  database: {
-    db: db,
-    type: "mongodb"
-  },
+
+  database: mongodbAdapter(db), 
+  
   emailAndPassword: { 
     enabled: true, 
   },
@@ -19,4 +23,5 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     },
   },
+  secret: process.env.BETTER_AUTH_SECRET,
 });

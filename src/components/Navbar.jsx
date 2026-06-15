@@ -70,7 +70,7 @@ const Navbar = () => {
             <Link href="/tutors" className={getLinkClass("/tutors")}>Tutors</Link>
             {user && <Link href="/add-tutor" className={getLinkClass("/add-tutor")}>Add Tutor</Link>}
             {user && <Link href="/my-tutors" className={getLinkClass("/my-tutors")}>My Tutors</Link>}
-            {user && <Link href="/my-booked" className={getLinkClass("/my-booked")}>My Booked Sessions</Link>}
+            {user && <Link href="/my-booking" className={getLinkClass("/my-booking")}>My Booked Sessions</Link>}
           </div>
 
           <div className="flex items-center gap-3">
@@ -89,7 +89,7 @@ const Navbar = () => {
               <div className="relative" ref={dropRef}>
                 <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center focus:outline-none">
                   <img
-                    src={user.image || "https://i.ibb.co/MBtjqXQ/no-avatar.png"} // BetterAuth এ ইউজার ছবির প্রপার্টি 'image' হয়
+                    src={user.image || "https://i.ibb.co/MBtjqXQ/no-avatar.png"}
                     alt="avatar"
                     className="w-9 h-9 rounded-full border-2 border-emerald-400 object-cover"
                   />
