@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import { Sun, Moon, Bars, Xmark } from '@gravity-ui/icons';
 
 const Navbar = () => {
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session } = authClient.useSession();
   const user = session?.user; 
 
   const pathname = usePathname();

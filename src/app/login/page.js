@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "@/lib/auth-client";
 import toast from "react-hot-toast";
 
+// 🎯 এটিই হচ্ছে আপনার প্রধান Default Export কম্পোনেন্ট
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -46,8 +47,16 @@ export default function LoginPage() {
       await signIn.social({
         provider: "google",
         callbackURL: from,
+        dontRedirect: true,
+        onSuccess: () => {
+          toast.success("Logged in with Google successfully!");
+          router.replace(from);
+          router.refresh();
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message || "Google login failed");
+        }
       });
-      toast.success("Redirecting to Google...");
     } catch (err) {
       toast.error("Google login failed");
     }
@@ -73,7 +82,7 @@ export default function LoginPage() {
           </div>
           <div className="relative flex items-center">
             <input type={showPassword ? "text" : "password"} name="password" required placeholder="••••••••" className="w-full px-4 py-2.5 pr-11 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:border-emerald-500 text-sm bg-white dark:bg-gray-700 dark:text-white" />
-            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 text-gray-400 hover:text-emerald-600 transition focus:outline-none flex items-center justify-center">
+            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 text-gray-400 hover:text-emerald-600 transition focus:outline-none flex items-center justify-center cursor-pointer">
               {showPassword ? (
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" /></svg>
               ) : (
@@ -83,7 +92,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <button type="submit" disabled={loading} className="w-full py-3 text-white font-medium rounded-xl shadow-lg bg-gradient-to-r from-emerald-500 to-cyan-500 hover:opacity-90 transition disabled:opacity-60 cursor-pointer">
+        <button type="submit" disabled={loading} className="w-full py-3 text-white font-medium rounded-xl shadow-lg bg-gradient-to-r from-emerald-500 to-cyan-500 hover:opacity-90 transition disabled:opacity-60 cursor-pointer text-sm">
           {loading ? "Signing in..." : "Sign In"}
         </button>
       </form>
