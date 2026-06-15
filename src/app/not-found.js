@@ -18,10 +18,6 @@ export default function NotFound() {
           Oops! You've drifted off track
         </h2>
         
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
-          The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
-        </p>
-
        
         <Link
           href="/"
