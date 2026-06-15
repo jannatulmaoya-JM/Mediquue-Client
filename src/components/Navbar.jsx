@@ -58,7 +58,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-50 border-b border-gray-100 dark:border-gray-700">
+      <nav className="bg-white dark:bg-gray-90                                       0 shadow-sm sticky top-0 z-50 border-b border-gray-100 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 flex justify-between h-16 items-center">
 
           <Link href="/" className="text-xl font-black bg-gradient-to-r from-emerald-500 to-cyan-500 bg-clip-text text-transparent">
