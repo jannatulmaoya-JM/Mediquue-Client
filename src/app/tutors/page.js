@@ -35,68 +35,68 @@ export default function TutorsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10 space-y-8">
-       
-           <div className="flex flex-col items-center justify-center text-center space-y-2 pt-2 pb-8">
-             <h1 className="text-3xl md:text-4xl font-black tracking-tight text-gray-800 dark:text-white max-w-xl leading-tight">
-               ALL <span className="text-[#00bda8]">Tutors</span>
-             </h1>
-           
-             <p className="text-gray-400 dark:text-gray-400 text-xs md:text-sm font-medium max-w-md leading-relaxed">
-               Find your matching mentor using advanced search filters and accelerate your learning journey.
-             </p>
+    
+            <div className="flex flex-col items-center justify-center text-center space-y-1.5 pt-4 pb-6">
+              <h1 className="text-3xl md:text-4xl font-black tracking-tight text-gray-800 dark:text-white             leading-tight">
+                ALL <span className="text-[#00bda8]">Tutors</span>
+              </h1>
+              <p className="text-gray-400 dark:text-gray-500 text-xs md:text-sm font-medium max-w-md">
+                Browse all available tutors
+              </p>
             </div>
+            
+            <div className="max-w-7xl mx-auto mb-10 px-2">
+              <div className="flex flex-col sm:flex-row gap-3 items-center w-full">
+                
+                <div className="relative flex-1 w-full">
 
- 
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-400 dark:text-gray-400">
+                      <Magnifier width={18} height={18} />
+                  </div>
 
-            <div className="flex flex-col lg:flex-row gap-5 bg-white dark:bg-gray-800 p-5 rounded-2xl border border-gray-100       dark:border-gray-700/60 shadow-sm">
-  
-           <div className="flex-1 flex flex-col">
-    <label className="block text-[11px] font-bold text-gray-400 dark:text-gray-500 mb-1.5  tracking-wider pl-1">
-      Search by Name
-    </label>
-    <div className="relative">
- 
-      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-        <Magnifier width={16} height={16} />
-      </span>
-      <input
-        type="text"
-        placeholder="Type tutor name..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full pl-10 pr-4 py-2.5 bg-gray-50/60 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-medium focus:outline-none focus:border-[#00bda8] focus:bg-white dark:focus:bg-gray-900 text-gray-700 dark:text-gray-200 transition-all placeholder-gray-400"
-      />
-    </div>
-           </div>
-
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:w-1/2">
-
-    <div className="flex flex-col">
-      <label className="block text-[11px] font-bold text-gray-400 dark:text-gray-500 mb-1.5 tracking-wider pl-1">
-        Session Start From
-      </label>
-      <input
-        type="date"
-        value={startDate}
-        onChange={(e) => setStartDate(e.target.value)}
-        className="w-full px-4 py-2.5 bg-gray-50/60 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-medium focus:outline-none focus:border-[#00bda8] focus:bg-white dark:focus:bg-gray-900 text-gray-500 dark:text-gray-300 transition-all cursor-pointer"
-      />
-    </div>
-
-  
-    <div className="flex flex-col">
-      <label className="block text-[11px] font-bold text-gray-400 dark:text-gray-500 mb-1.5 tracking-wider pl-1">
-        Session End To
-      </label>
-      <input
-        type="date"
-        value={endDate}
-        onChange={(e) => setEndDate(e.target.value)}
-        className="w-full px-4 py-2.5 bg-gray-50/60 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-medium focus:outline-none focus:border-[#00bda8] focus:bg-white dark:focus:bg-gray-900 text-gray-500 dark:text-gray-300 transition-all cursor-pointer"
-      />
-          </div>
-           </div>
-
+                  <input
+                    type="text"
+                    placeholder="Search by tutor name..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                   className="w-full pl-12 pr-5 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm font-medium focus:outline-none focus:border-[#00bda8] shadow-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 transition-all"
+                  />
+                </div>
+            
+                <div className="flex gap-3 w-full sm:w-auto justify-end items-center">
+             
+                  <div className="relative w-full sm:w-40">
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm font-medium text-gray-500 dark:text-gray-400 shadow-sm focus:outline-none focus:border-[#00bda8] cursor-pointer transition-all"
+                    />
+                  </div>
+            
+                 
+                  <div className="relative w-full sm:w-40">
+                    <input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl text-sm font-medium text-gray-500 dark:text-gray-400 shadow-sm focus:outline-none focus:border-[#00bda8] cursor-pointer transition-all"
+                    />
+                  </div>
+                  
+                  <button
+                    onClick={() => {
+                      setSearch("");
+                      setStartDate("");
+                      setEndDate("");
+                    }}
+                    className="px-5 py-3 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold text-sm rounded-2xl transition shadow-sm border border-transparent dark:border-gray-700"
+                  >
+                    Clear
+                  </button>
+                </div>
+            
+              </div>
             </div>
       
             {loading ? (
