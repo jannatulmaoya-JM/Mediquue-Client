@@ -104,7 +104,42 @@ export default function HomePage() {
       </div>
   
 
-     
+      {/*  Why Choose MediQueue Section */}
+      <div className="max-w-5xl mx-auto px-4 text-center">
+        <h2 className="text-xl font-bold text-gray-800 dark:text-white">Why Choose MediQueue?</h2>
+        <p className="text-xs text-gray-400 mt-1 mb-10">We're built for learners, by educators</p>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700/50 rounded-2xl p-5 shadow-sm flex flex-col items-center justify-center transition-all duration-300 hover:border-[#00bda8]/30 hover:shadow-md hover:-translate-y-1">
+      <div className="text-[#00bda8] mb-3 p-2 rounded-xl bg-teal-50 dark:bg-teal-900/20 transition-colors duration-300 group-hover:bg-[#00bda8] group-hover:text-white">
+        <ShieldCheck width={22} height={22} />
+      </div>
+      <h5 className="text-xs font-bold text-gray-800 dark:text-white tracking-wide">Verified Profiles</h5>
+        </div>
+        <div className="group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700/50 rounded-2xl p-5 shadow-sm flex flex-col items-center justify-center transition-all duration-300 hover:border-[#00bda8]/30 hover:shadow-md hover:-translate-y-1">
+  
+  <div className="text-[#00bda8] mb-3 p-2 rounded-xl bg-teal-50 dark:bg-teal-900/20 transition-colors duration-300 group-hover:bg-[#00bda8] group-hover:text-white">
+    <Rocket width={22} height={22} />
+  </div>
+  <h5 className="text-xs font-bold text-gray-800 dark:text-white tracking-wide">Instant Queuing</h5>
+        </div>
+
+       <div className="group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700/50 rounded-2xl p-5 shadow-sm flex flex-col items-center justify-center transition-all duration-300 hover:border-[#00bda8]/30 hover:shadow-md hover:-translate-y-1">
+      <div className="text-[#00bda8] mb-3 p-2 rounded-xl bg-teal-50 dark:bg-teal-900/20 transition-colors duration-300 group-hover:bg-[#00bda8] group-hover:text-white">
+        <ListCheck width={22} height={22} />
+      </div>
+      <h5 className="text-xs font-bold text-gray-800 dark:text-white tracking-wide">Tracked Bookings</h5>
+       </div>
+
+        <div className="group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700/50 rounded-2xl p-5 shadow-sm flex flex-col items-center justify-center transition-all duration-300 hover:border-[#00bda8]/30 hover:shadow-md hover:-translate-y-1">
+      <div className="text-[#00bda8] mb-3 p-2 rounded-xl bg-teal-50 dark:bg-teal-900/20 transition-colors duration-300 group-hover:bg-[#00bda8] group-hover:text-white">
+        <Sliders width={22} height={22} />
+      </div>
+      <h5 className="text-xs font-bold text-gray-800 dark:text-white tracking-wide">Flexible Modes</h5>
+        </div>
+
+        </div>
+      </div>
 
     </div>
   );
