@@ -1,9 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import useAxiosSecure from "@/hooks/useAxiosSecure";
-import Spinner from "@/components/Spinner";
-import { authClient } from "@/lib/auth-client";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import Spinner from "../../components/Spinner";
+import { authClient } from "../../lib/auth-client";
 import { Pencil, TrashBin, Flask, TriangleExclamation } from '@gravity-ui/icons';
 
 const subjects = [

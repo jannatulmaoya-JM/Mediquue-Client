@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import TutorCard from "@/components/TutorCard";
-import Spinner from "@/components/Spinner";
-import Banner from "@/components/Banner";
+import TutorCard from "../components/TutorCard";
+import Spinner from "../components/Spinner";
+import Banner from "../components/Banner";
 import { ShieldCheck, Rocket, ListCheck, Sliders } from "@gravity-ui/icons";
 import { Magnifier, Calendar, GraduationCap } from "@gravity-ui/icons";
 

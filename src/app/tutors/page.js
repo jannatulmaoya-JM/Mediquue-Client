@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import TutorCard from "@/components/TutorCard";
-import Spinner from "@/components/Spinner";
+import TutorCard from "../../components/TutorCard";
+import Spinner from "../../components/Spinner";
 import { Magnifier } from "@gravity-ui/icons";
 
 export default function TutorsPage() {
