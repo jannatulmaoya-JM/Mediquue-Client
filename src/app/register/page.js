@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signUp, signIn } from "../../lib/auth-client";
+import { authClient } from "../../lib/auth-client"; 
 import { toast } from "react-hot-toast";
 
 export default function RegisterPage() {
@@ -21,7 +21,8 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const { data, error: authError } = await signUp.email({
+
+      const { data, error: authError } = await authClient.signUp.email({
         email,
         password,
         name,
@@ -44,8 +45,7 @@ export default function RegisterPage() {
 
   const handleGoogleLogin = async () => {
     try {
-     
-      await signIn.social({
+      await authClient.signIn.social({
         provider: "google",
         callbackURL: "/", 
         dontRedirect: true, 
@@ -64,7 +64,6 @@ export default function RegisterPage() {
   };
 
   return (
-  
     <div className="max-w-md w-full bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 mx-auto my-10">
       <h2 className="text-3xl font-extrabold text-center mb-2 bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent">Create Account</h2>
       <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-8">Join MediQueue today to start your learning journey</p>

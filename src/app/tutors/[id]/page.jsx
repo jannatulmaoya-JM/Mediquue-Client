@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState, use } from 'react';
 import Image from 'next/image';
-import { Star, } from '@gravity-ui/icons';
+import { Star } from '@gravity-ui/icons';
 import toast from 'react-hot-toast';
+import { authClient } from "../../../lib/auth-client";
 
 export default function TutorDetailsPage({ params: paramsPromise }) {
   const params = use(paramsPromise); 
@@ -13,10 +14,9 @@ export default function TutorDetailsPage({ params: paramsPromise }) {
   const [isModalOpen, setIsModalOpen] = useState(false); 
   const [bookingLoading, setBookingLoading] = useState(false);
 
-  const loggedInUser = {
-    name: "Jannatul Maoya",
-    email: "jannatulmaoyacmt@gmail.com"
-  };
+ 
+  const { data: session, isPending } = authClient.useSession();
+  const loggedInUser = session?.user;
 
   useEffect(() => {
     if (!params?.id) return;
@@ -32,19 +32,25 @@ export default function TutorDetailsPage({ params: paramsPromise }) {
       })
       .catch((err) => {
         console.error(err);
-        setLoading(false);
+        loading(false);
       });
   }, [params?.id]);
 
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
+
+    if (!loggedInUser?.email) {
+      toast.error("Please login first to book a session!");
+      return;
+    }
+
     setBookingLoading(true);
 
     const form = e.target;
     const bookingData = {
       tutorId: tutor._id,
       tutorName: tutor.name,
-      studentName: loggedInUser.name,
+      studentName: loggedInUser.name,  
       studentEmail: loggedInUser.email,
       phone: form.phone.value,
     };
@@ -75,7 +81,7 @@ export default function TutorDetailsPage({ params: paramsPromise }) {
     }
   };
 
-  if (loading) return <div className="p-6 text-center min-h-screen flex items-center justify-center">Loading tutor details...</div>;
+  if (loading || isPending) return <div className="p-6 text-center min-h-screen flex items-center justify-center">Loading details...</div>;
   if (!tutor) return <div className="p-6 text-center text-red-500 font-bold min-h-screen flex items-center justify-center">Tutor not found!</div>;
 
   const photo = tutor.photo || tutor.image || "https://placehold.co/600x450?text=No+Image";
@@ -84,7 +90,7 @@ export default function TutorDetailsPage({ params: paramsPromise }) {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-12 dark:bg-gray-900 min-h-screen flex items-center justify-center">
-     
+      
       <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden w-full">
         <div className="flex flex-col md:flex-row gap-8 p-6 md:p-8 items-center md:items-stretch">
           
@@ -181,7 +187,7 @@ export default function TutorDetailsPage({ params: paramsPromise }) {
                 <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Student Name</label>
                 <input 
                   type="text" 
-                  value={loggedInUser.name} 
+                  value={loggedInUser?.name || ""} 
                   disabled
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-300 font-medium cursor-not-allowed" 
                 />
@@ -191,7 +197,7 @@ export default function TutorDetailsPage({ params: paramsPromise }) {
                 <label className="block text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1.5">Email</label>
                 <input 
                   type="email" 
-                  value={loggedInUser.email} 
+                  value={loggedInUser?.email || ""} 
                   disabled
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-300 font-medium cursor-not-allowed" 
                 />

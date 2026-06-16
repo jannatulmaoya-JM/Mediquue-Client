@@ -80,7 +80,7 @@ export default function HomePage() {
              <Magnifier width={20} height={20} />
            </div>
             <h4 className="text-sm font-bold text-gray-800 dark:text-white mb-1.5">Browse Tutors</h4>
-             <p className="text-xs text-gray-400 dark:text-gray-400 leading-relaxed max-w-[200px] font-medium">Explore tutors by        subject, schedule, and teaching mode.</p>
+             <p className="text-xs text-gray-400 dark:text-gray-400 leading-relaxed max-w-[200px] font-medium">Explore tutors by subject, schedule, and teaching mode.</p>
            </div>
        
            <div className="group bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700/50 rounded-2xl p-6 shadow-sm        flex flex-col items-center transition-all hover:border-[#00bda8]/30 hover:shadow-lg hover:-translate-y-1">
