@@ -1,196 +1,223 @@
-// "use client";
-// import React, { useEffect, useState } from 'react';
-
-// export default function MyTutorsPage() {
-//   const [tutorData, setTutorData] = useState(null);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     const fetchTutorProfile = async () => {
-//       try {
-
-//         const res = await fetch("/api/tutor/my-profile"); 
-//         const data = await res.json();
-//         setTutorData(data);
-//       } catch (error) {
-//         console.error("Error fetching profile:", error);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-//     fetchTutorProfile();
-//   }, []);
-
-//   if (loading) return <div className="text-center mt-20">Loading your profile...</div>;
-
-//   return (
-//     <div className="max-w-4xl mx-auto my-10 p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-md">
-//       <h1 className="text-3xl font-bold mb-6">My Tutor Profile</h1>
-      
-//       {tutorData ? (
-//         <div className="space-y-6">
-//           <div className="flex items-center gap-6 p-6 border rounded-xl bg-gray-50 dark:bg-gray-800">
-//             <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center text-2xl font-bold text-emerald-600">
-//               {tutorData.name[0]}
-//             </div>
-//             <div>
-//               <h2 className="text-2xl font-semibold">{tutorData.name}</h2>
-//               <p className="text-emerald-500 font-medium">{tutorData.subject}</p>
-//             </div>
-//           </div>
-
-//           <div className="grid grid-cols-2 gap-4">
-//             <div className="p-4 border rounded-xl">
-//               <p className="text-sm text-gray-500">Experience</p>
-//               <p className="font-bold">{tutorData.experience} Years</p>
-//             </div>
-//             <div className="p-4 border rounded-xl">
-//               <p className="text-sm text-gray-500">Hourly Rate</p>
-//               <p className="font-bold">${tutorData.rate}/hr</p>
-//             </div>
-//           </div>
-
-//           <div className="p-4 border rounded-xl">
-//             <p className="text-sm text-gray-500 mb-2">Bio</p>
-//             <p className="text-gray-700 dark:text-gray-300">{tutorData.bio}</p>
-//           </div>
-
-//           <button className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700">
-//             Edit Profile
-//           </button>
-//         </div>
-//       ) : (
-//         <div className="text-center py-10">
-//           <p className="mb-4">You haven't created a tutor profile yet.</p>
-//           <a href="/add-tutor" className="text-emerald-600 font-bold underline">
-//             Create your profile now
-//           </a>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-
-
 "use client";
-import React, { useEffect, useState } from 'react';
-import { authClient } from "@/lib/auth-client"; 
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import useAxiosSecure from "@/hooks/useAxiosSecure";
 import Spinner from "@/components/Spinner";
+import { authClient } from "@/lib/auth-client";
+import { Pencil, TrashBin, Flask, TriangleExclamation } from '@gravity-ui/icons';
+
+const subjects = [
+  "Mathematics", "Physics", "Chemistry", "Biology", "English", 
+  "History", "Geography", "Computer Science", "Economics", "Other"
+];
 
 export default function MyTutorsPage() {
   const { data: session } = authClient.useSession();
   const user = session?.user;
-
-  const [tutorData, setTutorData] = useState(null);
+  const axiosSecure = useAxiosSecure();
+  const [tutors, setTutors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editTutor, setEditTutor] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-   
-    if (!user?.name) return;
+    if (!user?.email) {
+      setLoading(false);
+      return;
+    }
 
-    const fetchTutorProfile = async () => {
-      try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-        
-        const res = await fetch(`${apiUrl}/tutors?search=${encodeURIComponent(user.name)}`);
-        
-        if (!res.ok) throw new Error("Failed to fetch tutor data");
-        
-        const data = await res.json();
-       
-        if (Array.isArray(data) && data.length > 0) {
-          setTutorData(data[0]);
-        } else {
-          setTutorData(null);
-        }
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-      } finally {
-        setLoading(false);
-      }
+    axiosSecure
+      .get(`/tutors/my-tutors?email=${user.email}`)
+      .then((res) => setTutors(res.data))
+      .catch((err) => {
+        console.error(err);
+        toast.error("Failed to load tutors");
+      })
+      .finally(() => setLoading(false));
+  }, [user?.email, axiosSecure]);
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    
+    const updated = {
+      name: form.name.value,
+      photo: form.photo.value,
+      subject: form.subject.value,
+      availability: form.availability.value,
+      hourlyFee: parseFloat(form.hourlyFee.value),
+      totalSlot: parseInt(form.totalSlot.value),
+      institution: form.institution.value,
+      experience: form.experience.value, 
+      location: { area: form.area.value, city: form.city.value },
+      teachingMode: form.teachingMode.value,
     };
+    
+    setSaving(true);
+    try {
+      await axiosSecure.put(`/tutors/${editTutor._id}`, updated);
+      setTutors((prev) => prev.map((t) => (t._id === editTutor._id ? { ...t, ...updated } : t)));
+      toast.success("Tutor updated successfully!");
+      setEditTutor(null);
+    } catch (error) {
+      console.error(error);
+      toast.error("Update failed");
+    } finally {
+      setSaving(false);
+    }
+  };
 
-    fetchTutorProfile();
-  }, [user]);
+  const handleDelete = async () => {
+    try {
+      await axiosSecure.delete(`/tutors/${deleteId}`);
+      setTutors((prev) => prev.filter((t) => t._id !== deleteId));
+      toast.success("Tutor deleted.");
+      setDeleteId(null);
+    } catch (error) {
+      console.error(error);
+      toast.error("Delete failed");
+    }
+  };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="text-center">
-          <Spinner />
-          <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">Loading your tutor profile...</p>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <Spinner />;
 
   return (
-    <div className="max-w-4xl mx-auto my-10 p-8 bg-white dark:bg-gray-900 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800">
-      <h1 className="text-3xl font-black mb-6 text-gray-800 dark:text-white">My Tutor Profile</h1>
-      
-      {tutorData ? (
-        <div className="space-y-6">
-       
-       
-          <div className="flex items-center gap-6 p-6 border rounded-xl bg-gray-50 dark:bg-gray-800/40 border-gray-100 dark:border-gray-700">
-            <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-              {tutorData.name ? tutorData.name[0] : "?"}
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{tutorData.name}</h2>
-              <p className="text-emerald-500 font-semibold text-sm">{tutorData.language || tutorData.subject || "Language Tutor"}</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{tutorData.email || "No Email Provided"}</p>
-            </div>
-          </div>
+    <div className="max-w-6xl mx-auto px-6 py-12 dark:bg-gray-900 min-h-screen">
+   
+      <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-2 text-center">My Tutors</h2>
+      <p className="text-gray-500 dark:text-gray-400 mb-8 text-center">Manage tutors you've created</p>
 
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 border rounded-xl bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700">
-              <p className="text-xs uppercase tracking-wider font-semibold text-gray-400 mb-1">Experience</p>
-              <p className="text-lg font-bold text-gray-800 dark:text-gray-100">{tutorData.experience || "0"} Years</p>
-            </div>
-            <div className="p-4 border rounded-xl bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700">
-              <p className="text-xs uppercase tracking-wider font-semibold text-gray-400 mb-1">Hourly Rate</p>
-              <p className="text-lg font-bold text-gray-800 dark:text-gray-100">${tutorData.price || tutorData.rate || "0"}/hr</p>
-            </div>
-          </div>
-
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 border rounded-xl bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700">
-              <p className="text-xs uppercase tracking-wider font-semibold text-gray-400 mb-1">Total Slots</p>
-              <p className="text-lg font-bold text-gray-800 dark:text-gray-100">{tutorData.totalSlot ?? "N/A"}</p>
-            </div>
-            <div className="p-4 border rounded-xl bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700">
-              <p className="text-xs uppercase tracking-wider font-semibold text-gray-400 mb-1">Review Count</p>
-              <p className="text-lg font-bold text-gray-800 dark:text-gray-100">⭐ {tutorData.review || "0"}</p>
-            </div>
-          </div>
-
-          <div className="p-5 border rounded-xl bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700">
-            <p className="text-xs uppercase tracking-wider font-semibold text-gray-400 mb-2">About Me / Bio</p>
-            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-              {tutorData.description || tutorData.bio || "No description provided yet."}
-            </p>
-          </div>
-
-          <div className="pt-2">
-            <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2.5 rounded-xl transition shadow-sm text-sm">
-              Edit Profile
-            </button>
-          </div>
+      {tutors.length === 0 ? (
+        <div className="text-center py-20 text-gray-400">
+          <p className="text-xl font-semibold">No tutors added yet</p>
+          <p className="text-sm mt-2">Add a tutor from the "Add Tutor" page</p>
         </div>
       ) : (
-  
-        <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/20 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
-          <p className="text-gray-500 dark:text-gray-400 mb-4 font-medium">You haven't created a tutor profile yet.</p>
-          <a 
-            href="/add-tutor" 
-            className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-2.5 rounded-xl transition"
-          >
-            Create your profile now
-          </a>
+        <div className="overflow-x-auto rounded-2xl shadow">
+          <table className="min-w-full bg-white dark:bg-gray-800">
+            <thead>
+              <tr className="bg-gradient-to-r from-emerald-50 to-cyan-50 dark:from-gray-700 dark:to-gray-700 text-gray-600 dark:text-gray-300 text-sm">
+                <th className="px-6 py-3 text-left">Photo</th>
+                <th className="px-6 py-3 text-left">Name</th>
+                <th className="px-6 py-3 text-left">Subject</th>
+                <th className="px-6 py-3 text-left">Fee</th>
+                <th className="px-6 py-3 text-left">Slots</th>
+                <th className="px-6 py-3 text-left">Mode</th>
+                <th className="px-6 py-3 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+              {tutors.map((tutor) => (
+                <tr key={tutor._id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition text-sm text-gray-700 dark:text-gray-300">
+                  <td className="px-6 py-4">
+                    <img src={tutor.photo} alt={tutor.name} className="w-10 h-10 rounded-full object-cover" />
+                  </td>
+                  <td className="px-6 py-4 font-medium">{tutor.name}</td>
+                  <td className="px-6 py-4">{tutor.subject}</td>
+                  <td className="px-6 py-4">${tutor.hourlyFee}/hr</td>
+                  <td className="px-6 py-4">{tutor.totalSlot}</td>
+                  <td className="px-6 py-4">{tutor.teachingMode}</td>
+                  <td className="px-6 py-4 flex items-center gap-3">
+                    <button 
+                      onClick={() => setEditTutor(tutor)}
+                      className="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 hover:bg-emerald-200 transition flex items-center justify-center shrink-0 cursor-pointer" 
+                      title="Edit"
+                    >
+                      <Pencil width="16" height="16" stroke="currentColor" fill="currentColor" className="text-emerald-700 dark:text-emerald-400" />
+                    </button>
+                    <button 
+                      onClick={() => setDeleteId(tutor._id)}
+                      className="w-9 h-9 rounded-lg bg-red-100 dark:bg-red-900/40 hover:bg-red-200 transition flex items-center justify-center shrink-0 cursor-pointer" 
+                      title="Delete"
+                    >
+                      <TrashBin width="16" height="16" stroke="currentColor" fill="currentColor" className="text-red-700 dark:text-red-400" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editTutor && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4 overflow-y-auto py-8">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-lg relative">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 flex items-center justify-center bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-xl shrink-0">
+                <Flask width="24" height="24" fill="currentColor" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 dark:text-white">Edit Tutor</h3>
+            </div>
+            
+            <form onSubmit={handleUpdate} className="space-y-4">
+              {[
+                { label: "Name", name: "name", defaultValue: editTutor.name },
+                { label: "Photo URL", name: "photo", defaultValue: editTutor.photo },
+                { label: "Availability", name: "availability", defaultValue: editTutor.availability },
+                { label: "Hourly Fee", name: "hourlyFee", defaultValue: editTutor.hourlyFee, type: "number" },
+                { label: "Total Slots", name: "totalSlot", defaultValue: editTutor.totalSlot, type: "number" },
+                { label: "Institution", name: "institution", defaultValue: editTutor.institution },
+                { label: "Experience (years)", name: "experience", defaultValue: editTutor.experience },
+                { label: "Area", name: "area", defaultValue: editTutor.location?.area || "" },
+                { label: "City", name: "city", defaultValue: editTutor.location?.city || "" },
+              ].map((f) => (
+                <div key={f.name}>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{f.label}</label>
+                  <input 
+                    type={f.type || "text"} 
+                    name={f.name} 
+                    defaultValue={f.defaultValue} 
+                    required
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm bg-white dark:bg-gray-700 dark:text-white" 
+                  />
+                </div>
+              ))}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject</label>
+                <select name="subject" defaultValue={editTutor.subject}
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm bg-white dark:bg-gray-700 dark:text-white">
+                  {subjects.map((s) => <option key={s}>{s}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Teaching Mode</label>
+                <select name="teachingMode" defaultValue={editTutor.teachingMode}
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm bg-white dark:bg-gray-700 dark:text-white">
+                  <option>Online</option><option>Offline</option><option>Both</option>
+                </select>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button type="button" onClick={() => setEditTutor(null)}
+                  className="flex-1 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm dark:text-gray-300 transition hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">Cancel</button>
+                <button type="submit" disabled={saving}
+                  className="flex-1 py-2.5 bg-gradient-to-r from-emerald-500 to-cyan-500 text-white rounded-xl text-sm disabled:opacity-60 transition shadow-sm hover:scale-105 active:scale-95 flex gap-2 items-center justify-center font-semibold cursor-pointer">
+                  {saving ? "Saving Changes..." : "Save Changes"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirm Modal */}
+      {deleteId && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-sm text-center">
+            <div className="w-16 h-16 flex items-center justify-center bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 rounded-full mb-5 mx-auto">
+              <TriangleExclamation width="32" height="32" fill="currentColor" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">Delete Tutor?</h3>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 max-w-xs mx-auto leading-relaxed">This action cannot be undone. All data related to this tutor will be permanently removed.</p>
+            <div className="flex gap-3">
+              <button onClick={() => setDeleteId(null)}
+                className="flex-1 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm dark:text-gray-300 transition hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">Cancel</button>
+              <button onClick={handleDelete}
+                className="flex-1 py-2.5 bg-red-500 text-white rounded-xl text-sm hover:bg-red-600 transition shadow-sm hover:scale-105 active:scale-95 font-semibold cursor-pointer">Delete</button>
+            </div>
+          </div>
         </div>
       )}
     </div>
