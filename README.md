@@ -3,7 +3,7 @@
 MediQueue is a website where medical students can easily find and book specialized tutors online. The system handles tutor schedules automatically and helps students track their booked classes.
 
 ## Project Links
-  **Live Website:** []
+  **Live Website:** [https://mediqueue-client-amber.vercel.app]
   **Client Side Code:** [https://github.com/jannatulmaoya-JM/Mediquue-Client]
   **Server Side Code:** [https://github.com/jannatulmaoya-JM/Mediqueue-Server]
 
