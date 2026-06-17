@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "../../lib/auth-client";
+import { authClient } from "../../lib/auth-client";
 import toast from "react-hot-toast";
 
 export default function LoginPage() {
@@ -23,7 +23,7 @@ export default function LoginPage() {
     setLoading(true);
     
     try {
-      const { data, error: authError } = await signIn.email({
+      const { data, error: authError } = await authClient.signIn.email({
         email,
         password,
       });
@@ -34,8 +34,8 @@ export default function LoginPage() {
       router.replace(from);
       router.refresh();
     } catch (err) {
-      setError(err.message);
-      toast.error("Login failed");
+      setError(err.message || "Login failed");
+      toast.error(err.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -43,7 +43,7 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     try {
-      await signIn.social({
+      await authClient.signIn.social({
         provider: "google",
         callbackURL: from,
         dontRedirect: true,
@@ -104,7 +104,7 @@ export default function LoginPage() {
       </button>
 
       <p className="text-sm text-gray-600 dark:text-gray-400 text-center mt-6">
-        Don't have an account? <Link href="/register" className="text-emerald-600 font-semibold hover:underline">Register here</Link>
+        Don't have an account? <Link href={`/register?from=${encodeURIComponent(from)}`} className="text-emerald-600 font-semibold hover:underline">Register here</Link>
       </p>
     </div>
   );

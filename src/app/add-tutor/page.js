@@ -19,13 +19,16 @@ export default function AddTutorPage() {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
+    
     e.preventDefault();
+    e.stopPropagation();
+
     if (!user?.email) {
       toast.error("Please log in first");
       return;
     }
 
-    const form = e.target;
+    const form = e.currentTarget;
     const tutorData = {
       name: form.name.value,
       photo: form.photo.value,
@@ -47,8 +50,22 @@ export default function AddTutorPage() {
       toast.success("Tutor added successfully!");
       router.push("/my-tutors");
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to add tutor");
+      console.error("Submission Error: ", error);
+      
+      if (error.response?.status === 401) {
+        try {
+          const axios = await import("axios");
+          await axios.default.post(`${process.env.NEXT_PUBLIC_API_URL}/tutors`, tutorData, {
+            withCredentials: true
+          });
+          toast.success("Tutor added successfully! (Session Restored)");
+          router.push("/my-tutors");
+        } catch (innerError) {
+          toast.error("Session unauthorized. Please log in again.");
+        }
+      } else {
+        toast.error("Failed to add tutor");
+      }
     } finally {
       setLoading(false);
     }
@@ -56,7 +73,7 @@ export default function AddTutorPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-12 dark:bg-gray-900 min-h-screen">
-      <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">Add a Tutor</h2>
+      <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">Add Tutor</h2>
       <p className="text-gray-500 dark:text-gray-400 mb-8">Fill in the details to list a new tutor</p>
 
       <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-2xl shadow p-8 space-y-5">
@@ -67,9 +84,9 @@ export default function AddTutorPage() {
             { label: "Availability", name: "availability", type: "text", placeholder: "Sun-Thu 5:00PM-8:00PM" },
             { label: "Hourly Fee ($)", name: "hourlyFee", type: "number", placeholder: "25" },
             { label: "Total Slots", name: "totalSlot", type: "number", placeholder: "10" },
-            { label: "Institution", name: "institution", type: "text", placeholder: "Harvard University" },
+            { label: "Institution", name: "institution", type: "text", placeholder: " University" },
             { label: "Experience (years)", name: "experience", type: "text", placeholder: "5" },
-            { label: "Area", name: "area", type: "text", placeholder: "Dhanmondi" },
+            { label: "Area", name: "area", type: "text", placeholder: "Area" },
             { label: "City", name: "city", type: "text", placeholder: "Dhaka" },
           ].map((f) => (
             <div key={f.name}>

@@ -84,7 +84,6 @@ export default function MyTutorsPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12 dark:bg-gray-900 min-h-screen">
-   
       <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-2 text-center">My Tutors</h2>
       <p className="text-gray-500 dark:text-gray-400 mb-8 text-center">Manage tutors you've created</p>
 
@@ -202,7 +201,7 @@ export default function MyTutorsPage() {
         </div>
       )}
 
-      {/* Delete Confirm Modal */}
+      {/* Delete  Modal */}
       {deleteId && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-sm text-center">

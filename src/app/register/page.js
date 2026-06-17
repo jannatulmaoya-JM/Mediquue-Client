@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { authClient } from "../../lib/auth-client"; 
 import { toast } from "react-hot-toast";
 
@@ -11,6 +11,10 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+
+  const from = searchParams.get("from") || "/";
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -21,7 +25,6 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-
       const { data, error: authError } = await authClient.signUp.email({
         email,
         password,
@@ -34,7 +37,7 @@ export default function RegisterPage() {
       }
 
       toast.success("Account created successfully! Please login.");
-      router.push("/login");
+      router.push(`/login?from=${encodeURIComponent(from)}`);
     } catch (err) {
       setError(err.message || "Something went wrong");
       toast.error(err.message || "Registration failed");
@@ -47,11 +50,11 @@ export default function RegisterPage() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/", 
+        callbackURL: from, 
         dontRedirect: true, 
         onSuccess: () => {
           toast.success("Signed up with Google successfully!");
-          router.push("/");
+          router.replace(from);
           router.refresh();
         },
         onError: (ctx) => {
@@ -76,7 +79,7 @@ export default function RegisterPage() {
       </form>
       <div className="relative flex py-5 items-center"><div className="flex-grow border-t border-gray-100 dark:border-gray-600"></div><span className="mx-4 text-gray-400 text-xs uppercase">or</span><div className="flex-grow border-t border-gray-100 dark:border-gray-600"></div></div>
       <button onClick={handleGoogleLogin} className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-sm font-medium dark:text-white cursor-pointer"><svg className="h-5 w-5" viewBox="0 0 24 24"><path fill="#EA4335" d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.115-5.166 4.115-3.414 0-6.182-2.768-6.182-6.182s2.768-6.182 6.182-6.182c1.482 0 2.839.524 3.905 1.39l3.052-3.052C18.91 2.502 15.82 1.333 12.24 1.333 6.353 1.333 1.572 6.114 1.572 12s4.781 10.667 10.668 10.667c6.143 0 10.457-4.305 10.457-10.667 0-.714-.076-1.257-.21-1.714H12.24z" /></svg>Sign up with Google</button>
-      <p className="text-sm text-gray-600 dark:text-gray-400 text-center mt-6">Already have an account? <Link href="/login" className="text-emerald-600 font-semibold hover:underline">Log in here</Link></p>
+      <p className="text-sm text-gray-600 dark:text-gray-400 text-center mt-6">Already have an account? <Link href={`/login?from=${encodeURIComponent(from)}`} className="text-emerald-600 font-semibold hover:underline">Log in here</Link></p>
     </div>
   );
 }
