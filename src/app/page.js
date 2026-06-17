@@ -14,7 +14,7 @@ export default function HomePage() {
 
   useEffect(() => {
  
-    fetch("http://localhost:5000/featured-tutors")
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/featured-tutors`)
       .then((res) => {
         if (!res.ok) {
           throw new Error(`Server error: ${res.status}`);

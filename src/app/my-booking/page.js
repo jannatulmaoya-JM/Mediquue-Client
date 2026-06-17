@@ -15,7 +15,7 @@ export default function MyBookingsPage() {
 
   const fetchBookings = async () => {
     if (!user?.email) return;
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const apiUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
     try {
       const res = await fetch(`${apiUrl}/bookings?email=${user.email}`);
       const data = await res.json();
@@ -35,7 +35,7 @@ export default function MyBookingsPage() {
     if (!cancelId) return;
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const apiUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:5000";
       const res = await fetch(`${apiUrl}/bookings/${cancelId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },

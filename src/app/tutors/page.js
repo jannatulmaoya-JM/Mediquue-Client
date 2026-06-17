@@ -22,7 +22,7 @@ export default function TutorsPage() {
       endDate
     }).toString();
 
-    fetch(`http://localhost:5000/tutors?${query}`)
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/tutors?${query}`)
       .then((res) => res.json())
       .then((data) => {
         setTutors(data);
